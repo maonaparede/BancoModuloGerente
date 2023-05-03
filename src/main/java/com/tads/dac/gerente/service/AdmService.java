@@ -10,13 +10,8 @@ import com.tads.dac.gerente.exceptions.GerenteConstraintViolation;
 import com.tads.dac.gerente.exceptions.GerenteDoesntExistException;
 import com.tads.dac.gerente.model.Gerente;
 import java.util.List;
-import java.util.Optional;
-import javax.persistence.Tuple;
 
-/**
- *
- * @author jeffe
- */
+
 public interface AdmService {
     
     Gerente save(Gerente gerente) throws GerenteConstraintViolation;

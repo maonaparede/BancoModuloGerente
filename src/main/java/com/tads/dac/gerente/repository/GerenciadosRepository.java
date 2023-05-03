@@ -17,7 +17,6 @@ public interface GerenciadosRepository extends JpaRepository<Gerenciados, Long> 
     List<Gerenciados> findByGerenteId(@Param("id") Long id); //@Param("id") 
     
     
-    
     @Query(nativeQuery = true, value = """
                                        select gerente_id from (select gerente_id , count(gerente_id) ct from tb_gerenciados group by gerente_id
                                        order by ct desc limit 1) tb""")
