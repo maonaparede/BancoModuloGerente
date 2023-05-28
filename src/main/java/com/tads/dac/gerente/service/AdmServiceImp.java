@@ -24,7 +24,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AdmServiceImp implements AdmService{
+public class AdmServiceImp{
     
     @Autowired
     private GerenteRepository rep;
@@ -32,16 +32,20 @@ public class AdmServiceImp implements AdmService{
     @Autowired
     private GerenciadosRepository gerRep;
 
-    @Override
+    
     public Gerente save(Gerente gerente) throws GerenteConstraintViolation{
         try{
-            Gerente ger = rep.save(new Gerente(gerente.getCpf(), gerente.getNome(), 
-                    gerente.getEmail(), gerente.getTelefone())
-            );
-
-            Optional<Long> gerenteMaiorNumCliente = gerRep.selectIdGerenteMaiorNumGerenciados();
+            Gerente ger = new Gerente();
+            ger.setCpf(gerente.getCpf());
+            ger.setEmail(gerente.getEmail());
+            ger.setNome(gerente.getNome());
+            ger.setTelefone(gerente.getTelefone());
             
-            List<Gerenciados> list = gerRep.findByGerenteId(gerenteMaiorNumCliente.get());
+            ger = rep.save(ger);
+
+            Long gerenteMaiorNumCliente = gerRep.selectIdGerenteMaiorNumGerenciados().get(0);
+            
+            List<Gerenciados> list = gerRep.findByGerenteId(gerenteMaiorNumCliente);
             if(list.size() > 1){
                 gerRep.mudaGerenteConta(list.get(0).getIdConta(), ger.getId());
             }
@@ -55,12 +59,12 @@ public class AdmServiceImp implements AdmService{
         }
     }
 
-    @Override
+    
     public List<Gerente> findAll() {
         return rep.findAllOrderByNome();
     }
 
-    @Override
+    
     public Gerente findById(Long id) throws GerenteDoesntExistException{
         Optional<Gerente> ger = rep.findById(id);
         if(ger.isPresent()){
@@ -70,7 +74,7 @@ public class AdmServiceImp implements AdmService{
         }
     }
     
-    @Override
+    
     public List<GerenteDashboardDTO> findDashboard() {
         List<Tuple> tuples = rep.findDashboard();
         List<GerenteDashboardDTO> gers = new ArrayList<>();
@@ -89,7 +93,7 @@ public class AdmServiceImp implements AdmService{
         return gers;
     }
 
-    @Override
+    
     public Gerente update(Gerente gerente, Long id) throws GerenteDoesntExistException, GerenteConstraintViolation{
         Optional<Gerente> ger = rep.findById(id);
         if(ger.isPresent()){
@@ -116,14 +120,14 @@ public class AdmServiceImp implements AdmService{
         }
     }
 
-    @Override
+    
     public void deleteById(Long id) throws DeleteLastGerenteException{
         Long count = rep.count();
         if(count > 1){
-            Optional<Long> id_dest = gerRep.selectIdGerenteMenorNumGerenciados();
+            Long id_dest = gerRep.selectIdGerenteMenorNumGerenciados().get(0);
             
             //Se a conta que estiver sendo excluida for a mesma que contem o menor numero de gerenciados
-            if(id.equals(id_dest.get())){
+            if(id.equals(id_dest)){
                 List<Gerente> gers = rep.findAll(); //Busca todas os gerentes
                 for (Gerente ger : gers) { //Itera sobre todos até achar um que não seja a conta a ser excluida
                     if(!id.equals(ger.getId())){
@@ -132,7 +136,7 @@ public class AdmServiceImp implements AdmService{
                     }
                 }
             }else{
-                gerRep.transferirTodasAsContas(id, id_dest.get());
+                gerRep.transferirTodasAsContas(id, id_dest);
             }
             
             rep.deleteById(id); 

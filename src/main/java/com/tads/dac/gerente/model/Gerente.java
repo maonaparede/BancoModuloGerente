@@ -17,6 +17,9 @@ import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 
@@ -29,6 +32,9 @@ import javax.persistence.Table;
 @SqlResultSetMapping(name = "Mapping.GerenteDashboardDTO", classes = @ConstructorResult(targetClass = GerenteDashboardDTO.class ,
         columns = {@ColumnResult(name = "id"), @ColumnResult(name = "nome"), @ColumnResult(name = "email"), @ColumnResult(name = "clientes"), @ColumnResult(name = "pos"), @ColumnResult(name = "neg")}))
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "tb_gerente")
 public class Gerente implements Serializable{
@@ -48,75 +54,5 @@ public class Gerente implements Serializable{
     
     @Column(length = 11, nullable = false)
     private String telefone;
-    
-    @OneToMany(targetEntity = Gerenciados.class)
-    private List<Gerenciados> gerenciados;
 
-    public Gerente() {
-    }
-    
-    public Gerente(String cpf, String nome, String email, String telefone) {
-        this.cpf = cpf;
-        this.nome = nome;
-        this.email = email;
-        this.telefone = telefone;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
-    public List<Gerenciados> getGerenciados() {
-        return gerenciados;
-    }
-
-    public void setGerenciados(List<Gerenciados> gerenciados) {
-        this.gerenciados = gerenciados;
-    }
-    
-    
-    public void addGerenciado(Gerenciados ger){
-        if(gerenciados ==  null){
-            gerenciados = new ArrayList<>();
-        }
-        gerenciados.add(ger);
-    }
-    
-    
 }

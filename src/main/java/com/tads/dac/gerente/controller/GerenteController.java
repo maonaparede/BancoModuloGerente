@@ -28,8 +28,8 @@ public class GerenteController {
     
     @GetMapping("/adm") // Ex - http://localhost:8080/api/gerente -- sem
     public ResponseEntity<Long> findAll(){
-        Optional<Long> ger = rep.selectIdGerenteMaiorNumGerenciados();
-        return ResponseEntity.status(HttpStatus.OK).body(ger.get());
+        Long ger = rep.selectIdGerenteMaiorNumGerenciados().get(0);
+        return ResponseEntity.status(HttpStatus.OK).body(ger);
     }
 
 }

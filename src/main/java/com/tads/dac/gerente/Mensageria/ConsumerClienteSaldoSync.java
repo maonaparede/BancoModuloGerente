@@ -5,7 +5,9 @@
 package com.tads.dac.gerente.Mensageria;
 import com.tads.dac.gerente.DTOs.GerenciadoSaldoDTO;
 import com.tads.dac.gerente.model.Gerenciados;
+import com.tads.dac.gerente.model.Gerente;
 import com.tads.dac.gerente.repository.GerenciadosRepository;
+import com.tads.dac.gerente.repository.GerenteRepository;
 import java.math.BigDecimal;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
@@ -19,6 +21,8 @@ public class ConsumerClienteSaldoSync {
     
     @Autowired
     private GerenciadosRepository rep;
+    
+    @Autowired GerenteRepository repGer;
    
     @RabbitListener(queues = "gerente")
     public void syncModuloCliente(@Payload GerenciadoSaldoDTO dto){
@@ -33,6 +37,15 @@ public class ConsumerClienteSaldoSync {
             }else{
                 ger.setSaldoPositivo(false);
             }
+            
+            if(dto.getIdGerente() != null){
+                Optional<Gerente> gerente =  repGer.findById(dto.getIdGerente());
+                if (gerente.isPresent()) {
+                    ger.setGerenteId(gerente.get());
+                }
+            }
+            
+            
             rep.save(ger);
         }
         

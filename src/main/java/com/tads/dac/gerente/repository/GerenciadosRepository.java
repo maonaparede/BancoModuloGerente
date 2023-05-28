@@ -19,14 +19,14 @@ public interface GerenciadosRepository extends JpaRepository<Gerenciados, Long> 
     
     @Query(nativeQuery = true, value = """
                                        select gerente_id from (select gerente_id , count(gerente_id) ct from tb_gerenciados group by gerente_id
-                                       order by ct desc limit 1) tb""")
-    Optional<Long> selectIdGerenteMaiorNumGerenciados();
+                                       order by ct desc limit 2) tb""")
+    List<Long> selectIdGerenteMaiorNumGerenciados();
     
     
     @Query(nativeQuery = true, value = """
                                        select gerente_id from (select gerente_id , count(gerente_id) ct from tb_gerenciados group by gerente_id
-                                       order by ct asc limit 1) tb""")
-    Optional<Long> selectIdGerenteMenorNumGerenciados();
+                                       order by ct asc limit 2) tb""")
+    List<Long> selectIdGerenteMenorNumGerenciados();
 
     @Transactional //  A transação é uma unidade de trabalho isolada que leva o banco de dados de um estado consistente a outro estado consistente
     @Modifying // Retorna numero de linhas alteradas no bd
