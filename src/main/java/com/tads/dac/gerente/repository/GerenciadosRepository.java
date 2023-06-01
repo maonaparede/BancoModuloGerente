@@ -18,14 +18,16 @@ public interface GerenciadosRepository extends JpaRepository<Gerenciados, Long> 
     
     
     @Query(nativeQuery = true, value = """
-                                       select gerente_id from (select gerente_id , count(gerente_id) ct from tb_gerenciados group by gerente_id
-                                       order by ct desc limit 2) tb""")
-    List<Long> selectIdGerenteMaiorNumGerenciados();
+                                       select id_ger from (select g.id as id_ger, COUNT(m.id_conta) as total from tb_gerente g 
+                                       left join tb_gerenciados m on g.id = m.gerente_id 
+                                       group by g.id order by total desc limit 1) tb""")
+    Long selectIdGerenteMaiorNumGerenciados();
     
     
     @Query(nativeQuery = true, value = """
-                                       select gerente_id from (select gerente_id , count(gerente_id) ct from tb_gerenciados group by gerente_id
-                                       order by ct asc limit 2) tb""")
+                                       select id_ger from (select g.id as id_ger, COUNT(m.id_conta) as total from tb_gerente g 
+                                       left join tb_gerenciados m on g.id = m.gerente_id 
+                                       group by g.id order by total asc limit 2) tb""")
     List<Long> selectIdGerenteMenorNumGerenciados();
 
     @Transactional //  A transação é uma unidade de trabalho isolada que leva o banco de dados de um estado consistente a outro estado consistente
@@ -37,6 +39,9 @@ public interface GerenciadosRepository extends JpaRepository<Gerenciados, Long> 
     @Modifying
     @Query(nativeQuery = true, value = "update tb_gerenciados set gerente_id = :gerente where id_conta = :conta")
     int mudaGerenteConta(@Param("conta") Long conta, @Param("gerente") Long gerente);
+    
+    @Query(nativeQuery = true, value = "select id_conta, gerente_id, saldo_positivo from tb_gerenciados where gerente_id = :id limit 1")
+    Optional<Gerenciados> selectOneGerenciadoByGerenteId(@Param("id") Long id);
 
 }
 

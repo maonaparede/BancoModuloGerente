@@ -22,7 +22,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ConsumerSaga {
+public class ConsumerSagaRemoveGerente {
     
     @Autowired
     private GerenciadosRepository rep;

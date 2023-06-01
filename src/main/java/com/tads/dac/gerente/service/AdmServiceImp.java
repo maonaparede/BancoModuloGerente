@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.tads.dac.gerente.service;
 
 import com.tads.dac.gerente.DTOs.GerenteDashboardDTO;
@@ -43,7 +40,7 @@ public class AdmServiceImp{
             
             ger = rep.save(ger);
 
-            Long gerenteMaiorNumCliente = gerRep.selectIdGerenteMaiorNumGerenciados().get(0);
+            Long gerenteMaiorNumCliente = gerRep.selectIdGerenteMaiorNumGerenciados();
             
             List<Gerenciados> list = gerRep.findByGerenteId(gerenteMaiorNumCliente);
             if(list.size() > 1){

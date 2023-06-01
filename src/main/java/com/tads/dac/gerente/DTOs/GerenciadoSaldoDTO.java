@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 public class GerenciadoSaldoDTO {
     
-    private Long idGerenciado;
+    private Long idConta;
     private BigDecimal saldo;
     private Long idGerente;
     

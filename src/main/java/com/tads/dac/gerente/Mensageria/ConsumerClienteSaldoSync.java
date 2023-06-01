@@ -27,7 +27,7 @@ public class ConsumerClienteSaldoSync {
     @RabbitListener(queues = "gerente")
     public void syncModuloCliente(@Payload GerenciadoSaldoDTO dto){
         
-        Optional<Gerenciados> op = rep.findById(dto.getIdGerenciado());
+        Optional<Gerenciados> op = rep.findById(dto.getIdConta());
         if(op.isPresent()){
             
             Gerenciados ger = op.get();
