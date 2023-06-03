@@ -4,6 +4,7 @@
  */
 package com.tads.dac.gerente.service;
 
+import com.tads.dac.gerente.DTOs.AutocadastroDTO;
 import com.tads.dac.gerente.DTOs.GerenciadoGerenteDTO;
 import com.tads.dac.gerente.DTOs.GerenciadoGerenteSagaInsertDTO;
 import com.tads.dac.gerente.DTOs.GerenciadoSaldoDTO;
@@ -58,7 +59,7 @@ public class SagaService {
 
     public MensagemDTO atribuiGerenteAutocadastro(MensagemDTO msg) {
         try {
-            GerenciadoSaldoDTO dto = mapper.map(msg.getSendObj(), GerenciadoSaldoDTO.class);
+            AutocadastroDTO dto = mapper.map(msg.getSendObj(), AutocadastroDTO.class);
             
             Long id = getGerenteMenosContas(null);
             Optional<Gerente> gerente = repGer.findById(id);
