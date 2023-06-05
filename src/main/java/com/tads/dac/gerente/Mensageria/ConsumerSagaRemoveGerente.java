@@ -80,4 +80,25 @@ public class ConsumerSagaRemoveGerente {
         }
         template.convertAndSend("ger-rem-gerente-saga-receive", msg);
     }
+    
+    @RabbitListener(queues = "ger-rem-gerente-saga-rollback")
+    public void removeGerenteRollback(@Payload MensagemDTO msg){
+        try {
+            GerenteDTO dtoGer = mapper.map(msg.getSendObj(), GerenteDTO.class);
+                
+            RemoveGerenteDTO dtoConta = mapper.map(msg.getReturnObj(), RemoveGerenteDTO.class);  
+
+            Gerente ger = mapper.map(dtoGer, Gerente.class);
+            ger = repGer.save(ger);
+            
+            for(Long id : dtoConta.getContas()){
+                Gerenciados gerenciados = new Gerenciados(id, Boolean.FALSE, ger);
+                rep.save(gerenciados);
+            }
+        } catch (Exception e) {
+            msg.setMensagem("Erro Ao Remover o Gerente No Modulo Gerente: " + e.getMessage());
+            
+        }
+        template.convertAndSend("ger-rem-gerente-saga-receive", msg);
+    }
 }

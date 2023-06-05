@@ -29,10 +29,13 @@ public class Gerenciados implements Serializable{
     public Gerenciados() {
     }
 
-    public Gerenciados(Boolean saldoPositivo, Gerente gerenteId) {
+    public Gerenciados(Long idConta, Boolean saldoPositivo, Gerente gerenteId) {
+        this.idConta = idConta;
         this.saldoPositivo = saldoPositivo;
         this.gerenteId = gerenteId;
     }
+
+
 
     public Long getIdConta() {
         return idConta;
