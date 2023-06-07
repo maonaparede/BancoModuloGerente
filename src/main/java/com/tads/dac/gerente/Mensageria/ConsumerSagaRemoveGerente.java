@@ -44,16 +44,22 @@ public class ConsumerSagaRemoveGerente {
         
         try{
             if ("-".equals(msg.getSendObj().toString())) {
-                GerenteNewOldDTO dto = mapper.map(msg.getReturnObj(), GerenteNewOldDTO.class);
-                Long id = serv.getGerenteMenosContas(dto.getIdOld());
+                Long numGerente = repGer.count();
+                if (numGerente > 1) {
 
-                Optional<Gerente> ger = repGer.findById(id);
+                    GerenteNewOldDTO dto = mapper.map(msg.getReturnObj(), GerenteNewOldDTO.class);
+                    Long id = serv.getGerenteMenosContas(dto.getIdOld());
 
-                dto.setIdNew(ger.get().getId());
-                dto.setNomeNew(ger.get().getNome());
+                    Optional<Gerente> ger = repGer.findById(id);
 
-                msg.setReturnObj(null); // Reseta o Return obj
-                msg.setSendObj(dto); //coloca o DTO como novo sendObj
+                    dto.setIdNew(ger.get().getId());
+                    dto.setNomeNew(ger.get().getNome());
+
+                    msg.setReturnObj(null); // Reseta o Return obj
+                    msg.setSendObj(dto); //coloca o DTO como novo sendObj
+                }else{
+                    msg.setMensagem("Não É Possível Remover Gerente, Num de Gerente deve ser > 1 Para Ser Removido");
+                }
             }
         }catch(Exception e){
             System.err.println(e.getMessage());

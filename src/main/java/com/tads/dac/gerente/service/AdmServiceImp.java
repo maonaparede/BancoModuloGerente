@@ -1,6 +1,7 @@
 
 package com.tads.dac.gerente.service;
 
+import com.tads.dac.gerente.DTOs.GerenteDTO;
 import com.tads.dac.gerente.DTOs.GerenteDashboardDTO;
 import com.tads.dac.gerente.exceptions.DeleteLastGerenteException;
 import com.tads.dac.gerente.exceptions.GerenteConstraintViolation;
@@ -14,8 +15,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.persistence.Tuple;
 import org.hibernate.exception.ConstraintViolationException;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -29,8 +32,10 @@ public class AdmServiceImp{
     @Autowired
     private GerenciadosRepository gerRep;
 
+    @Autowired
+    private ModelMapper mapper;
     
-    public Gerente save(Gerente gerente) throws GerenteConstraintViolation{
+    public GerenteDTO save(Gerente gerente) throws GerenteConstraintViolation{
         try{
             Gerente ger = new Gerente();
             ger.setCpf(gerente.getCpf());
@@ -46,8 +51,9 @@ public class AdmServiceImp{
             if(list.size() > 1){
                 gerRep.mudaGerenteConta(list.get(0).getIdConta(), ger.getId());
             }
-                
-            return ger;
+            
+            GerenteDTO dto = mapper.map(ger, GerenteDTO.class);
+            return dto;
         }catch(DataIntegrityViolationException e){
             SQLException ex = ((ConstraintViolationException) e.getCause()).getSQLException();
             String campo = ex.getMessage();
@@ -57,15 +63,20 @@ public class AdmServiceImp{
     }
 
     
-    public List<Gerente> findAll() {
-        return rep.findAllOrderByNome();
+    public List<GerenteDTO> listarGerente() {
+        List<Gerente> model = rep.findAllOrderByNome();
+        List<GerenteDTO> dto = model.stream()
+                .map(user -> mapper.map(user, GerenteDTO.class))
+                .collect(Collectors.toList());
+        return dto;
     }
 
     
-    public Gerente findById(Long id) throws GerenteDoesntExistException{
+    public GerenteDTO findById(Long id) throws GerenteDoesntExistException{
         Optional<Gerente> ger = rep.findById(id);
         if(ger.isPresent()){
-            return ger.get();
+            GerenteDTO dto = mapper.map(ger.get(), GerenteDTO.class);
+            return dto;
         }else{
             throw new GerenteDoesntExistException("Um Gerente Com Esse Id Não Existe!");
         }

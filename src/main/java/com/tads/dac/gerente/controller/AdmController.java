@@ -32,32 +32,37 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 public class AdmController {
        
     @Autowired
-    AdmServiceImp service;
+    private AdmServiceImp service;
     
     @Autowired
     private ModelMapper mapper;
     
-    
+    //R15
     @GetMapping("/adm") // Ex - http://localhost:8080/api/gerente -- sem
-    public ResponseEntity<List<GerenteDashboardDTO>> findAll(){
+    public ResponseEntity<List<GerenteDashboardDTO>> telaInicial(){
         List<GerenteDashboardDTO> gerdto = service.findDashboard();
         return ResponseEntity.status(HttpStatus.OK).body(gerdto);
     }
     
-    
-    @GetMapping("/adm/{id}") //Ex - http://localhost:8080/api/gerente?id=1 - sem body
+    //R20 para consulta
+    @GetMapping("/adm/{id}")
     public ResponseEntity<GerenteDTO> getById(@PathVariable(value = "id") Long id){       
         try{
-            Gerente gerente = service.findById(id);
-            GerenteDTO gerdto = mapper.map(gerente, GerenteDTO.class);
+            GerenteDTO gerdto = service.findById(id);
             return new ResponseEntity<>(gerdto, HttpStatus.OK);
         }catch(GerenteDoesntExistException e){
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);   
         }
     }
     
+    //R19
+    @GetMapping("/adm/all")
+    public ResponseEntity<?> getListagemGerente(){
+            List<GerenteDTO> gerentes = service.listarGerente();
+            return new ResponseEntity<>(gerentes, HttpStatus.OK);
+    }   
     
-    //Tem qe ver as especificações com o professor R17
+    /*
     @PostMapping("/adm") //Ex - http://localhost:8080/api/gerente -- cm body;
     public ResponseEntity<?> save(@RequestBody Gerente gerente){
        
@@ -99,13 +104,6 @@ public class AdmController {
                 return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);   
             } 
     }
-
-    
-    //Tem que implementar
-    public ResponseEntity<List<ClienteDTO>> gerarRelatorioClientes() {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-    }
-    
-    
+    */
  
 }

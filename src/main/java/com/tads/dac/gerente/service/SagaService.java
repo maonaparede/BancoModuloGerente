@@ -4,13 +4,17 @@
  */
 package com.tads.dac.gerente.service;
 
+import com.tads.dac.gerente.DTOs.AlteraGerenteDTO;
 import com.tads.dac.gerente.DTOs.AutocadastroDTO;
+import com.tads.dac.gerente.DTOs.GerenciadoDTO;
 import com.tads.dac.gerente.DTOs.GerenciadoGerenteDTO;
 import com.tads.dac.gerente.DTOs.GerenciadoGerenteSagaInsertDTO;
 import com.tads.dac.gerente.DTOs.GerenciadoSaldoDTO;
 import com.tads.dac.gerente.DTOs.GerenteDTO;
 import com.tads.dac.gerente.DTOs.GerentePrimeiraContaDTO;
 import com.tads.dac.gerente.DTOs.MensagemDTO;
+import com.tads.dac.gerente.DTOs.RejeitaClienteDTO;
+import com.tads.dac.gerente.exceptions.GerenciadoDoesntExistException;
 import com.tads.dac.gerente.exceptions.GerenteConstraintViolation;
 import com.tads.dac.gerente.exceptions.GerenteDoesntExistException;
 import com.tads.dac.gerente.model.Gerenciados;
@@ -150,6 +154,55 @@ public class SagaService {
         }catch(Exception e){
             System.err.println("Erro ao dar rollback na criação de Gerente:" + e.getMessage());
         }
+    }
+
+    public GerenciadoDTO rejeitaCliente(RejeitaClienteDTO dto) throws GerenciadoDoesntExistException {
+        Optional<Gerenciados> model = repGerenciados.findById(dto.getIdConta());
+        if(model.isPresent()){
+            GerenciadoDTO dtoRet = mapper.map(model.get(), GerenciadoDTO.class);
+            repGerenciados.deleteById(dto.getIdConta());
+            return dtoRet;
+        }
+        throw new GerenciadoDoesntExistException("Esse Gerenciado Não Existe!");
+    }
+
+    public void rejeitaClienteRollback(GerenciadoDTO dtoRet) {
+        Gerenciados model = mapper.map(dtoRet, Gerenciados.class);
+        repGerenciados.save(model);
+    }
+    
+    public MensagemDTO alteraGerente(MensagemDTO msg){
+        GerenteDTO dtoGer = mapper.map(msg.getSendObj(), GerenteDTO.class);
+        Optional<Gerente> model = repGer.findById(dtoGer.getId());
+        if(model.isPresent()){
+            Gerente ger = model.get();
+            
+            AlteraGerenteDTO altDto = new AlteraGerenteDTO();
+            altDto.setOldEmail(ger.getEmail());
+            altDto.setNewEmail(dtoGer.getEmail());
+            msg.setReturnObj(altDto);
+            
+            ger.setEmail(dtoGer.getEmail());
+            ger.setNome(dtoGer.getNome());
+            ger.setTelefone(dtoGer.getTelefone());
+            ger = repGer.save(ger);
+            
+            dtoGer = mapper.map(ger, GerenteDTO.class);
+            msg.setSendObj(dtoGer);
+            return msg;
+        }
+        msg.setMensagem("Um Gerente Com Esse Id não Existe!");
+        return msg;
+    }
+
+    public void alteraGerenteRollback(GerenteDTO dtoGer) {
+        Optional<Gerente> model = repGer.findById(dtoGer.getId());
+        if(model.isPresent()){
+            Gerente gerente = mapper.map(dtoGer, Gerente.class);
+            repGer.save(gerente);
+            return;
+        }
+        System.out.println("Deu Algum erro no Rollback de Alterar o Gerente");
     }
     
 }
