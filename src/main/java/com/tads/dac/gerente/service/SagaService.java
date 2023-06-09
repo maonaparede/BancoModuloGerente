@@ -177,6 +177,9 @@ public class SagaService {
         if(model.isPresent()){
             Gerente ger = model.get();
             
+            dtoGer = mapper.map(ger, GerenteDTO.class);
+            msg.setSendObj(dtoGer);
+            
             AlteraGerenteDTO altDto = new AlteraGerenteDTO();
             altDto.setOldEmail(ger.getEmail());
             altDto.setNewEmail(dtoGer.getEmail());
@@ -185,10 +188,8 @@ public class SagaService {
             ger.setEmail(dtoGer.getEmail());
             ger.setNome(dtoGer.getNome());
             ger.setTelefone(dtoGer.getTelefone());
-            ger = repGer.save(ger);
+            repGer.save(ger);
             
-            dtoGer = mapper.map(ger, GerenteDTO.class);
-            msg.setSendObj(dtoGer);
             return msg;
         }
         msg.setMensagem("Um Gerente Com Esse Id não Existe!");
